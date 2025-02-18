@@ -8,6 +8,21 @@ class Dummy:
                  dummy_position = 50.0):
 
         self.dummy_position = dummy_position
+        
+        #force error for error-handling tests
+        self.force_error = False
+
+
+    def OpenInstrument(self):
+        """
+        Establish connection to instrument
+        """
+
+        if self.force_error == 0:
+            print("Connection established")
+            pass
+        else:
+            print(f"Error opening connection with device: {self.force_error}")
 
     def TP(self):
         """
@@ -19,7 +34,13 @@ class Dummy:
         position : float
             current stage position
         """
-        print(f"Position: {self.dummy_position}")
+        
+        if self.force_error == 0:
+            print(f"Position: {self.dummy_position}")
+            pass
+        else:
+            print(f"Error opening connection with device: {self.force_error}")
+
         return self.dummy_position
 
     def PA_Get(self):
@@ -32,7 +53,12 @@ class Dummy:
             current stage position
         
         """
-        print(f"Position: {self.dummy_position}")
+        if self.force_error == 0:
+            print(f"Position: {self.dummy_position}")
+            pass
+        else:
+            print(f"Error returning absolute position:{self.force_error}")
+
         return self.dummy_position
 
     def PA_Set(self, position):
@@ -45,7 +71,12 @@ class Dummy:
             position to move to    
         
         """
-        print("Moved")
+        
+        if self.force_error == 0:
+            print("Moved")
+        else:
+            print(f"Error moving absolute: {self.force_error}")
+            
         self.dummy_position = position
 
 
@@ -59,7 +90,10 @@ class Dummy:
             current position after relative move
         
         """
-        return self.dummy_pos
+        if self.force_error == 0:
+            return self.dummy_pos
+        else:
+            print(f"Error returning relative position: {self.force_error}")
 
     def PR_Set(self, step):
         """
@@ -70,13 +104,31 @@ class Dummy:
         step : float
             distance to move stage       
         """
-        print(f"Moved approx. {step}")
-        self.dummy_position += step
+        if self.force_error == 0:
+            print(f"Moved approx. {step}")
+            self.dummy_position += step
+        else:
+            print(f"Error moving relative: {self.force_error} ")
+            
+        
 
     def CloseInstrument(self):
         print("Connection Closed")
 
-
+class DummyCom(Dummy):
+    def __init__(
+        self,
+        com_port
+    ):
+        if com_port == 'com3':
+            dummypos = 20.0
+        elif com_port == 'com4':
+            dummypos = 10.0
+        else:
+            print("ERROR")    
+        super().__init__(dummypos)
+        print(com_port)
+        
 class FiberControl():
 
     def __init__(self, xcom_port, ycom_port):
