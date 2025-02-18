@@ -115,7 +115,7 @@ class Dummy:
     def CloseInstrument(self):
         print("Connection Closed")
 
-class DummyCom(Dummy):
+class Actuator(Dummy):
     def __init__(
         self,
         com_port
@@ -128,7 +128,9 @@ class DummyCom(Dummy):
             print("ERROR")    
         super().__init__(dummypos)
         print(com_port)
-        
+
+
+
 class FiberControl():
 
     def __init__(self, xcom_port, ycom_port):
