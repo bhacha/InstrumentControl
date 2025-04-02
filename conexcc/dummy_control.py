@@ -115,7 +115,7 @@ class Dummy:
     def CloseInstrument(self):
         print("Connection Closed")
 
-class DummyCom(Dummy):
+class Actuator(Dummy):
     def __init__(
         self,
         com_port
@@ -128,7 +128,9 @@ class DummyCom(Dummy):
             print("ERROR")    
         super().__init__(dummypos)
         print(com_port)
-        
+
+
+
 class FiberControl():
 
     def __init__(self, xcom_port, ycom_port):
@@ -185,6 +187,14 @@ class FiberControl():
         self.xact.PA_Set(xpos)
         self.yact.PA_Set(ypos)
 
+    def move_x_to(self, position):
+        xpos = self._format_single_position(position)
+        self.xact.PA_Set(xpos)
+
+    def move_y_to(self, position):
+        ypos = self._format_single_position(position)
+        self.xact.PA_Set(ypos)
+
     def move_by(self, step):
         self.xact.PR_Set(step[0])
         self.yact.PR_Set(step[1])
@@ -198,6 +208,14 @@ class FiberControl():
         xpos = self.xact.PA_Get()
         ypos = self.yact.PA_Get()
         return [xpos, ypos]
+
+    def get_xpos(self):
+        xpos = self.xact.PA_Get()
+        return str(xpos)
+    
+    def get_ypos(self):
+        ypos = self.yact.PA_Get()
+        return str(ypos)
 
     def _serial_raster(self, xrange, yrange):
         confirm = input("WARNING: THIS WILL CAUSE THE STAGE TO MOVE HUGE DISTANCES!! TYPE 'yes' TO CONTINUE \n")
@@ -249,6 +267,12 @@ class FiberControl():
         else:
             print("Error: Position beyond limits")
 
+    def _format_single_position(self, position):
+        pos = float(position)
+        if (pos <= self.y_hardlims[1]) and (pos >= self.y_hardlims[0]):
+            return pos
+        else:
+            print("Error: Position beyond limits")
   
 
 if __name__ == "__main__":
