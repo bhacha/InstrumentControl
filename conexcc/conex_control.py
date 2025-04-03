@@ -1,6 +1,8 @@
 import clr
 import sys
 import time
+import numpy as np
+
 
 
 sys.path.append(r'C:/Program Files (x86)/Newport/MotionControl/CONEX-CC/Bin')
