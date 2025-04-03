@@ -142,6 +142,9 @@ class FiberControl():
 
         self.is_error = False
 
+    def stop(self):
+        pass
+
     def raster(self, xlims, ylims, step_size, mode='serpentine'):
         """
         Raster a rectangular area with width from xlims[0] to xlims[1] and height ylims[0] to ylims[1] in steps of step_size[0] and [1] respectively
