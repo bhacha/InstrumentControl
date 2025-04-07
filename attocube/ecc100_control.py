@@ -2,7 +2,7 @@ from ctypes import (c_int32, c_bool, byref, create_string_buffer, Structure, POI
 from enum import Enum
 import time
 
-lib=oledll.LoadLibrary('X:\dataBackup\Programs\Attocube\Software_ECC100_1.6.8\ECC100_DLL\Win64\ecc.dll') # this is the path to the ecc.dll, if becoming a package easily can be modified
+lib=oledll.LoadLibrary('InstrumentControl\dependencies\ECC100\ecc.dll') # this is the path to the ecc.dll, if becoming a package easily can be modified
 
 class EccInfo(Structure):
     _fields_ = [('id',c_int32),('locked',c_bool)]
