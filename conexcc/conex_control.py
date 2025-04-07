@@ -3,8 +3,6 @@ import sys
 import time
 import numpy as np
 
-
-
 sys.path.append(r'C:/Program Files (x86)/Newport/MotionControl/CONEX-CC/Bin')
 
 clr.AddReference("Newport.CONEXCC.CommandInterface")
@@ -62,6 +60,7 @@ class Actuator:
         resp, target, err = self.driver.PA_Get(1)
         if resp == 0:
             print(f"Current Position: {target}")
+            return target
         else:
             print(f"Error returning absolute position: {err}")
 
@@ -113,6 +112,25 @@ class Actuator:
             pass
         else:
             print(f"Error moving relative: {err} ")
+        
+    def stop(self):
+        "Stop the instrument"
+
+        resp, err = self.driver.ST(1)
+        if resp == 0:
+            print(f"STOPPED")
+            pass
+        else:
+            print(f"Error stopping: {err} ")
+
+    def TS(self):
+        resp, errcode, state, errstr = self.driver.TS(1)
+        if resp == 0:
+            # print(f"{errcode} + {state}")
+            pass
+        else:
+            print(f"Error: {errstr} ")
+        return state
 
     def CloseInstrument(self):
         resp = self.driver.CloseInstrument()
@@ -252,6 +270,14 @@ class FiberControl():
         self.xact.PA_Set(xpos)
         self.yact.PA_Set(ypos)
 
+    def move_x_to(self, position):
+        xpos = self._format_position(position, axis='x')
+        self.xact.PA_Set(xpos)
+    
+    def move_y_to(self, position):
+        ypos = self._format_position(position, axis='y')
+        self.yact.PA_Set(ypos)
+
     def move_by(self, step):
         self.xact.PR_Set(step[0])
         self.yact.PR_Set(step[1])
@@ -265,6 +291,26 @@ class FiberControl():
         xpos = self.xact.PA_Get()
         ypos = self.yact.PA_Get()
         return [xpos, ypos]
+    
+    def stop(self):
+        self.xact.stop()
+        self.yact.stop()
+
+    def get_state(self):
+        xstate = self.xact.TS()
+        ystate = self.yact.TS()
+        return [xstate, ystate]
+    
+    def is_moving(self):
+        xstate, ystate = self.get_state()
+        if (xstate == '33') and (ystate == '33'):
+            return 0
+        elif (xstate == '28') or (ystate == '28'):
+            return 1
+        else:
+            print(f"Error: X State: {xstate}, Y State: {ystate}")
+            pass
+
 
     def _serial_raster(self, xrange, yrange):
         confirm = input("WARNING: THIS WILL CAUSE THE STAGE TO MOVE HUGE DISTANCES!! TYPE 'yes' TO CONTINUE \n")
@@ -304,21 +350,33 @@ class FiberControl():
         except:
             print("Error: Make sure limits and step size can be converted to floats")
         
-    def _format_position(self, position):
+    def _format_positions(self, positions):
         """
         make sure position is a float and that it lies within the bounds of the actuator's limits
         """
-        xpos = float(position[0])
-        ypos = float(position[1])
-  
-        if (ypos <= self.y_hardlims[1]) and (ypos >= self.y_hardlims[0]) and (xpos <= self.x_hardlims[1]) and (xpos >= self.x_hardlims[0]):
-            return [xpos, ypos]
-        else:
-            print("Error: Position beyond limits")
+        xpos = self._format_position(positions[0], axis='x')
+        ypos = self._format_position(positions[1], axis='y')
+        return [xpos, ypos]
 
+
+    def _format_position(self, position, axis):
+        position = float(position)
+        if axis == "y":
+            ypos = position
+            if (ypos <= self.y_hardlims[1]) and (ypos >= self.y_hardlims[0]):
+                return ypos
+            else:
+                print("Error: Position beyond limits")
+
+        elif axis == "x":
+            xpos = position
+            if (xpos <= self.x_hardlims[1]) and (xpos >= self.x_hardlims[0]):
+                return xpos
+            else:
+                print("Error: Position beyond limits")
 
 
     
 
 if __name__ == "__main__":
-    pass
+  pass
