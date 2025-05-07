@@ -220,8 +220,8 @@ class FiberControl():
         self.xact = Actuator(xcom_port)
         self.yact = Actuator(ycom_port)
 
-        self.x_hardlims = [0, 10] #hardware limits in X
-        self.y_hardlims = [0, 10] #hardware limits in Y
+        self.x_hardlims = [0, 12] #hardware limits in X
+        self.y_hardlims = [0, 12] #hardware limits in Y
 
         self.is_error = False
 
